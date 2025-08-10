@@ -1,0 +1,65 @@
+.dashboard-layout {
+  display: flex;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-right: 1px solid #ccc;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin: 10px 0;
+  cursor: pointer;
+  color: #333;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 2rem;
+}
+
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.product-card {
+  width: 200px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #fff;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.product-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.sidebar ul li {
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+.sidebar ul li:hover,
+.sidebar ul li.active-category {
+  background-color: #007bff;
+  color: white;
+}

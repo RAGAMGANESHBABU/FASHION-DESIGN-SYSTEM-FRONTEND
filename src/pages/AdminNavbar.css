@@ -1,0 +1,49 @@
+/* Reset spacing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+/* Navbar styling */
+.admin-navbar {
+  background-color: #1f1f1f;
+  color: white;
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.admin-navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.admin-nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.admin-nav-links li {
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.admin-nav-links li:hover {
+  color: #ffcc00;
+}
