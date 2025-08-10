@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import './Login.css'; // 👈 Import CSS file
+import './Login.css';
+
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +14,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post('http://localhost:5000/api/users/login', {
+      const res = await axios.post(`${BASE_URL}/users/login`, {
         email,
         password,
       });

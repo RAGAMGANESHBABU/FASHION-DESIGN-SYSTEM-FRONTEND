@@ -3,6 +3,9 @@ import axios from 'axios';
 import AdminNavbar from './AdminNavbar';
 import './AdminDashboard.css';
 
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+console.log('API Base URL:', process.env.REACT_APP_API_BASE_URL);
+
 const AdminDashboard = () => {
   const [product, setProduct] = useState({
     name: '',
@@ -18,8 +21,12 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get('http://localhost:5000/api/products');
-    setProducts(res.data);
+    try {
+      const res = await axios.get(`${BASE_URL}/products`);
+      setProducts(res.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
   };
 
   const handleChange = (e) => {
@@ -40,7 +47,7 @@ const AdminDashboard = () => {
     formData.append('image', image);
 
     try {
-      await axios.post('http://localhost:5000/api/products', formData, {
+      await axios.post(`${BASE_URL}/products`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       alert('Product added!');
@@ -54,7 +61,7 @@ const AdminDashboard = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/products/${id}`);
+      await axios.delete(`${BASE_URL}/products/${id}`);
       fetchProducts();
     } catch (err) {
       alert('Failed to delete product');
@@ -112,7 +119,7 @@ const AdminDashboard = () => {
           ) : (
             products.map((prod) => (
               <div key={prod._id} className="product-item">
-                <img src={`http://localhost:5000/uploads/${prod.image}`} alt={prod.name} />
+                <img src={`${BASE_URL.replace('/api', '')}/uploads/${prod.image}`} alt={prod.name} />
                 <h4>{prod.name}</h4>
                 <p>₹{prod.price}</p>
                 <p>{prod.category}</p>
@@ -121,7 +128,6 @@ const AdminDashboard = () => {
             ))
           )}
         </div>
-
       </div>
     </>
   );

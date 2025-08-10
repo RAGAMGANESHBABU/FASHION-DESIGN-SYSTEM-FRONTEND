@@ -3,6 +3,8 @@ import Navbar from './Navbar';
 import axios from 'axios';
 import './Dashboard.css';
 
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 function Dashboard() {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -11,8 +13,8 @@ function Dashboard() {
     try {
       const url =
         category === 'All'
-          ? 'http://localhost:5000/api/products'
-          : `http://localhost:5000/api/products?category=${category}`;
+          ? `${BASE_URL}/products`
+          : `${BASE_URL}/products?category=${category}`;
       const response = await axios.get(url);
       setProducts(response.data);
     } catch (error) {
@@ -48,13 +50,15 @@ function Dashboard() {
         <main className="dashboard-content">
           <h1>{selectedCategory} Products</h1>
           {products.length === 0 ? (
-            <p style={{ textAlign: 'center', marginTop: '2rem' }}>No products available in this category.</p>
+            <p style={{ textAlign: 'center', marginTop: '2rem' }}>
+              No products available in this category.
+            </p>
           ) : (
             <div className="product-grid">
               {products.map((product) => (
                 <div className="product-card" key={product._id}>
                   <img
-                    src={`http://localhost:5000/uploads/${product.image}`}
+                    src={`${BASE_URL.replace('/api', '')}/uploads/${product.image}`}
                     alt={product.name}
                     className="product-image"
                   />
@@ -74,3 +78,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+ 

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import NavBar from './Navbar';
-import './Profile.css'; // 👈 Import CSS file
+import './Profile.css';
+
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -14,7 +16,7 @@ const Profile = () => {
       const id = parsedUser._id;
 
       axios
-        .get(`http://localhost:5000/api/users/profile/${id}`)
+        .get(`${BASE_URL}/users/profile/${id}`)
         .then((res) => {
           setProfile(res.data);
           setLoading(false);
