@@ -4,21 +4,28 @@ import axios from 'axios';
 import './Dashboard.css';
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const  IMAGE_BASE= process.env.REACT_APP_IMAGE_BASE_URL;
 
 function Dashboard() {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [loading, setLoading] = useState(false);
 
   const fetchProducts = async (category) => {
     try {
+      setLoading(true);
       const url =
         category === 'All'
           ? `${BASE_URL}/products`
-          : `${BASE_URL}/products?category=${category}`;
+          : `${BASE_URL}/products?category=${encodeURIComponent(category)}`;
+
       const response = await axios.get(url);
-      setProducts(response.data);
+      setProducts(response.data || []);
     } catch (error) {
       console.error('Error fetching products:', error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,7 +56,10 @@ function Dashboard() {
 
         <main className="dashboard-content">
           <h1>{selectedCategory} Products</h1>
-          {products.length === 0 ? (
+
+          {loading ? (
+            <p style={{ textAlign: 'center', marginTop: '2rem' }}>Loading...</p>
+          ) : products.length === 0 ? (
             <p style={{ textAlign: 'center', marginTop: '2rem' }}>
               No products available in this category.
             </p>
@@ -58,7 +68,7 @@ function Dashboard() {
               {products.map((product) => (
                 <div className="product-card" key={product._id}>
                   <img
-                    src={`${BASE_URL.replace('/api', '')}/uploads/${product.image}`}
+                    src={`${IMAGE_BASE}/uploads/${product.image}`}
                     alt={product.name}
                     className="product-image"
                   />
@@ -78,4 +88,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
- 
