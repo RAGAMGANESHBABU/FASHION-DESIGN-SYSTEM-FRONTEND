@@ -13,6 +13,7 @@ function Navbar() {
       <ul className="navbar-menu">
         <li onClick={() => navigate('/dashboard')}>Home</li>
         <li onClick={() => navigate('/orders')}>Orders</li>
+        <li onClick={() => navigate('/cart')}>Cart 🛒</li>
         <li onClick={() => navigate('/profile')}>Profile</li>
         <li onClick={() => navigate('/')}>Logout</li>
       </ul>

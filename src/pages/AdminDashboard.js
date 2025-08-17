@@ -3,19 +3,36 @@ import axios from 'axios';
 import AdminNavbar from './AdminNavbar';
 import './AdminDashboard.css';
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-console.log('API Base URL:', process.env.REACT_APP_API_BASE_URL);
+const BASE_URL = 'https://fashion-design-system-backend.vercel.app/api';
 
-const AdminDashboard = () => {
-  const [product, setProduct] = useState({
-    name: '',
-    price: '',
-    description: '',
-    category: '',
-  });
-  const [image, setImage] = useState(null);
+function AdminDashboard() {
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('Men');
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
   const [products, setProducts] = useState([]);
+  const [editingId, setEditingId] = useState(null); // Track update mode
 
+  // Convert file → base64
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Small preview (browser blob)
+    setPreview(URL.createObjectURL(file));
+
+    // Save base64 for DB
+    const reader = new FileReader();
+    reader.onloadend = () => setImageFile(reader.result);
+    reader.readAsDataURL(file);
+  };
+
+
+  // Fetch products on page load
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -24,113 +41,122 @@ const AdminDashboard = () => {
     try {
       const res = await axios.get(`${BASE_URL}/products`);
       setProducts(res.data);
-    } catch (error) {
-      console.error('Error fetching products:', error);
+    } catch (err) {
+      console.error('Error fetching products:', err);
     }
   };
 
-  const handleChange = (e) => {
-    setProduct({ ...product, [e.target.name]: e.target.value });
-  };
-
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
-  };
-
+  // Add or Update product
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('name', product.name);
-    formData.append('price', product.price);
-    formData.append('description', product.description);
-    formData.append('category', product.category);
-    formData.append('image', image);
+    if (!name || !price || !description || !imageFile || !category) {
+      setMessage('⚠️ Please fill all fields');
+      return;
+    }
 
     try {
-      await axios.post(`${BASE_URL}/products`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      alert('Product added!');
-      setProduct({ name: '', price: '', description: '', category: '' });
-      setImage(null);
-      fetchProducts();
+      setLoading(true);
+      setMessage('');
+
+      if (editingId) {
+        // Update product
+        await axios.put(`${BASE_URL}/products/${editingId}`, {
+          name,
+          price: Number(price),
+          description,
+          category,
+          image: imageFile,
+        });
+        alert(' Product updated successfully!');
+      } else {
+        // Add product
+        await axios.post(`${BASE_URL}/products`, {
+          name,
+          price: Number(price),
+          description,
+          category,
+          image: imageFile,
+        });
+        alert('✅ Product added successfully!');
+      }
+
+      // Reset form
+      setName('');
+      setPrice('');
+      setDescription('');
+      setCategory('Men');
+      setImageFile(null);
+      setEditingId(null);
+      fetchProducts(); // refresh list
     } catch (err) {
-      alert('Failed to add product');
+      console.error('Error saving product:', err.response?.data || err.message);
+      setMessage('❌ Failed to save product.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Load product into form for editing
+  const handleEdit = (product) => {
+    setEditingId(product._id);
+    setName(product.name);
+    setPrice(product.price);
+    setDescription(product.description);
+    setCategory(product.category);
+    setImageFile(product.image);
+  };
+
+  // Delete product
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       await axios.delete(`${BASE_URL}/products/${id}`);
+      setMessage('🗑️ Product deleted successfully!');
       fetchProducts();
     } catch (err) {
-      alert('Failed to delete product');
+      console.error('Error deleting product:', err.response?.data || err.message);
+      setMessage('❌ Failed to delete product.');
     }
   };
 
   return (
-    <>
+    <div>
       <AdminNavbar />
-      <div className="admin-container">
-        <form onSubmit={handleSubmit} className="product-form">
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name"
-            value={product.name}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="number"
-            name="price"
-            placeholder="Product Price"
-            value={product.price}
-            onChange={handleChange}
-            required
-          />
-          <textarea
-            name="description"
-            placeholder="Product Description"
-            value={product.description}
-            onChange={handleChange}
-            rows="5"
-            required
-          />
-          <select
-            name="category"
-            value={product.category}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Category</option>
-            <option value="Men">Men</option>
-            <option value="Women">Women</option>
-            <option value="Kids">Kids</option>
-            <option value="Accessories">Accessories</option>
+      <div className="admin-dashboard">
+        <h1>{editingId ? 'Update Product' : 'Add New Product'}</h1>
+        {message && <p className="status-message">{message}</p>}
+        <form className="product-form" onSubmit={handleSubmit}>
+          <input type="text" placeholder="Product Name" value={name} onChange={(e) => setName(e.target.value)} />
+          <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} />
+          <textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+            <option>Men</option><option>Women</option><option>Kids</option>
+            <option>Footwear</option><option>Accessories</option><option>Seasonal</option>
           </select>
-          <input type="file" accept="image/*" onChange={handleImageChange} required />
-          <button type="submit">Add Product</button>
+          <input type="file" accept="image/*" onChange={handleImageUpload} />
+          {preview && <img src={preview} alt="Preview" className="preview-image" />}
+
+          <button type="submit" disabled={loading}>{loading ? 'Saving...' : (editingId ? 'Update Product' : 'Add Product')}</button>
         </form>
 
+        {/* Product List */}
+        <h2>All Products</h2>
         <div className="product-list">
-          {products.length === 0 ? (
-            <p className="no-products">No products added.</p>
-          ) : (
-            products.map((prod) => (
-              <div key={prod._id} className="product-item">
-                <img src={`${BASE_URL.replace('/api', '')}/uploads/${prod.image}`} alt={prod.name} />
-                <h4>{prod.name}</h4>
-                <p>₹{prod.price}</p>
-                <p>{prod.category}</p>
-                <button onClick={() => handleDelete(prod._id)}>Delete</button>
-              </div>
-            ))
-          )}
+          {products.map((product) => (
+            <div key={product._id} className="product-card">
+              <img src={product.image} alt={product.name} />
+              <h3>{product.name}</h3>
+              <p>₹{product.price}</p>
+              <p>{product.description}</p>
+              <p><b>{product.category}</b></p>
+              <button onClick={() => handleEdit(product)}>✏️ Edit</button>
+              <button onClick={() => handleDelete(product._id)}>🗑️ Delete</button>
+            </div>
+          ))}
         </div>
       </div>
-    </>
+    </div>
   );
-};
+}
 
 export default AdminDashboard;

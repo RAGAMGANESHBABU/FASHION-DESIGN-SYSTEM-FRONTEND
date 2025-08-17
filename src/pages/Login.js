@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../api/axiosConfig';
+import axios from 'axios';
 import './Login.css';
+
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,10 +14,10 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await api.post('/users/login', { email, password });
+      const res = await axios.post(`${BASE_URL}/users/login`, { email, password });
 
       if (res.data?.user) {
-        localStorage.setItem('token', 'yes'); // prefer backend token
+        localStorage.setItem('token', 'yes'); // real token backend ichinappudu store cheyyadam better
         localStorage.setItem('user', JSON.stringify(res.data.user));
         navigate('/dashboard');
       } else {
@@ -25,13 +27,10 @@ const Login = () => {
       console.error('Login error:', error);
 
       if (error.response) {
-        // Server responded with error
         alert(error.response.data?.message || 'Invalid credentials');
       } else if (error.request) {
-        // Request was made but no response
         alert('No response from server. Please check your internet or backend.');
       } else {
-        // Other error
         alert('Error: ' + error.message);
       }
     }

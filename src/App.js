@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
 import AdminDashboard from './pages/AdminDashboard';
+import AdminOrders from './pages/AdminOrders';
+import Cart from './pages/Cart';
 
 
 function App() {
@@ -17,11 +19,12 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Private routes */}
-        
+          <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/cart" element={<Cart />} />
 
 
         {/* Catch-all: redirect unknown paths to login */}
