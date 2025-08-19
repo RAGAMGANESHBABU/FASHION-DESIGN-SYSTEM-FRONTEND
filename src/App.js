@@ -8,7 +8,7 @@ import Profile from "./pages/Profile";
 import AdminDashboard from './pages/AdminDashboard';
 import AdminOrders from './pages/AdminOrders';
 import Cart from './pages/Cart';
-
+import PrivateRoute from './pages/PrivateRoute';
 
 function App() {
   return (
@@ -19,15 +19,55 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Private routes */}
-        
-          <Route path="/admin/orders" element={<AdminOrders />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/cart" element={<Cart />} />
-        
-          
+        <Route
+          path="/admin/orders"
+          element={
+            <PrivateRoute>
+              <AdminOrders />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <PrivateRoute>
+              <Orders />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <PrivateRoute>
+              <Cart />
+            </PrivateRoute>
+          }
+        />
+
         {/* Catch-all: redirect unknown paths to login */}
         <Route path="*" element={<Login />} />
       </Routes>
