@@ -8,7 +8,6 @@ import Profile from "./pages/Profile";
 import AdminDashboard from './pages/AdminDashboard';
 import AdminOrders from './pages/AdminOrders';
 import Cart from './pages/Cart';
-import PrivateRoute from './pages/PrivateRoute';
 
 
 function App() {
