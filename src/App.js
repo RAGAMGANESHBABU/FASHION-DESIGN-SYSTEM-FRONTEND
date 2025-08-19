@@ -20,14 +20,14 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Private routes */}
-        <PrivateRoute>
+        
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/cart" element={<Cart />} />
-        </PrivateRoute>
+        
           
         {/* Catch-all: redirect unknown paths to login */}
         <Route path="*" element={<Login />} />
