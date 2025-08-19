@@ -48,24 +48,28 @@ function Dashboard() {
           <p>Loading...</p>
         ) : (
           <div className="products-grid">
-            {products.map((product) => (
-              <div key={product._id} className="product-card">
-                <img
-  src={
-    product.image?.startsWith("data:")
-      ? product.image // base64 string already data URI format
-      : `${BASE_URL}/uploads/${product.image}` // only filename unte server nunchi fetch cheyyi
-  }
-  alt={product.name}
-  className="product-image"
-/>
+            {products.map((product) => {
+              // 🔍 Debugging log
+              console.log("Product:", product.name, "Image:", product.image);
 
+              return (
+                <div key={product._id} className="product-card">
+                  <img
+                    src={
+                      product.image?.startsWith("data:")
+                        ? product.image
+                        : `data:image/jpeg;base64,${product.image}`
+                    }
+                    alt={product.name}
+                    className="product-image"
+                  />
 
-                <h3>{product.name}</h3>
-                <p>₹{product.price}</p>
-                <button onClick={() => handleBuyNow(product)}>Buy Now</button>
-              </div>
-            ))}
+                  <h3>{product.name}</h3>
+                  <p>₹{product.price}</p>
+                  <button onClick={() => handleBuyNow(product)}>Buy Now</button>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
