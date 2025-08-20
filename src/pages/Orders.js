@@ -10,22 +10,34 @@ function Orders() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${BASE_URL}/orders`);
-        // Only orders which are not cart
-        const placedOrders = response.data.filter(order => !order.isCart);
-        setOrders(placedOrders);
-        console.log("Orders fetched:", placedOrders);
-      } catch (err) {
-        console.error("Error fetching orders:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrders();
   }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${BASE_URL}/orders`);
+      const placedOrders = response.data.filter(order => !order.isCart);
+      setOrders(placedOrders);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = async (orderId) => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) return;
+
+    try {
+      await axios.delete(`${BASE_URL}/orders/${orderId}`);
+      setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
+      alert("Order cancelled successfully!");
+    } catch (err) {
+      console.error("Error cancelling order:", err);
+      alert("Failed to cancel order. Please try again.");
+    }
+  };
 
   return (
     <div>
@@ -39,24 +51,38 @@ function Orders() {
         <div className="orders-container">
           {orders.map(order => (
             <div key={order._id} className="order-card">
-              <div className="order-card-content">
-                <h3>{order.product?.name || 'Product'}</h3>
-                <p>Price: <span>₹{order.totalAmount}</span></p>
-                <p>Status: <span>{order.status}</span></p>
-                <p>Ordered on: <span>{new Date(order.createdAt).toLocaleString()}</span></p>
-              </div>
+              <div className="order-card-main">
+                {/* Left side: order details */}
+                <div className="order-card-content">
+                  <h3>{order.product?.name || 'Product'}</h3>
+                  <p>Price: <span>₹{order.totalAmount || order.product?.price}</span></p>
+                  <p>Status: <span>{order.status}</span></p>
+                  <p>Ordered on: <span>{new Date(order.createdAt).toLocaleString()}</span></p>
+                  {order.location && (
+                    <p>Delivery Address: <span>{order.location}</span></p>
+                  )}
+                </div>
 
-              {/* Product Image on right */}
-              {order.product?.image && (
-                <img
-                  src={order.product.image.startsWith('data:')
-                    ? order.product.image
-                    : `data:image/jpeg;base64,${order.product.image}`
-                  }
-                  alt={order.product.name || 'Product'}
-                  className="order-card-image"
-                />
-              )}
+                {/* Right side: image + cancel button */}
+                <div className="order-card-right">
+                  {order.product?.image && (
+                    <img
+                      src={order.product.image.startsWith('data:')
+                        ? order.product.image
+                        : `data:image/jpeg;base64,${order.product.image}`
+                      }
+                      alt={order.product.name || 'Product'}
+                      className="order-card-image"
+                    />
+                  )}
+                  <button
+                    className="cancel-order-btn"
+                    onClick={() => handleCancel(order._id)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css';
@@ -10,6 +10,12 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Login page ki velle prathi sari, localStorage clear avvadam
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -17,7 +23,8 @@ const Login = () => {
       const res = await axios.post(`${BASE_URL}/users/login`, { email, password });
 
       if (res.data?.user) {
-        localStorage.setItem('token', 'yes'); // real token backend ichinappudu store cheyyadam better
+        // Successful login
+        localStorage.setItem('token', 'yes'); // backend token ideally store cheyyali
         localStorage.setItem('user', JSON.stringify(res.data.user));
         navigate('/dashboard');
       } else {
@@ -47,7 +54,6 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-
         <input
           type="password"
           placeholder="Password"
@@ -55,7 +61,6 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-
         <button type="submit">Login</button>
       </form>
 

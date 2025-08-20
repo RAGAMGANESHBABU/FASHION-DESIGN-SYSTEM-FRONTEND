@@ -2,12 +2,25 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "./Navbar";
 import "./Dashboard.css";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function Dashboard() {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [address, setAddress] = useState({
+    line1: "",
+    line2: "",
+    landmark: "",
+    pincode: "",
+    city: "",
+    state: ""
+  });
+
+  const navigate = useNavigate();
 
   const categories = [
     "All",
@@ -19,6 +32,7 @@ function Dashboard() {
     "Seasonal",
   ];
 
+  // Fetch products
   const fetchProducts = async (category) => {
     try {
       const url =
@@ -35,6 +49,75 @@ function Dashboard() {
   useEffect(() => {
     fetchProducts(selectedCategory);
   }, [selectedCategory]);
+
+  // Add to Cart
+  const addToCart = async (product) => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser || !storedUser._id) {
+      alert("You must be logged in to add to cart!");
+      return;
+    }
+    const userId = storedUser._id;
+
+    const cartData = {
+      user: userId,
+      product: product._id,
+      isCart: true,
+    };
+
+    try {
+      await axios.post(`${BASE_URL}/orders`, cartData);
+      alert(`${product.name} added to cart successfully!`);
+    } catch (error) {
+      console.error("Error adding product to cart:", error.response?.data || error);
+      alert("Failed to add product to cart.");
+    }
+  };
+
+  // Order Now → open popup
+  const orderNow = (product) => {
+    setSelectedProduct(product);
+    setShowPopup(true);
+  };
+
+  // Handle confirm order
+  const confirmOrder = async () => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser || !storedUser._id) {
+      alert("You must be logged in to place an order!");
+      return;
+    }
+
+    const userId = storedUser._id;
+
+    // Combine address fields
+    const fullAddress = `${address.line1}, ${address.line2}, ${address.landmark}, ${address.pincode}, ${address.city}, ${address.state}`;
+    console.log(fullAddress);
+    const orderData = {
+      user: userId,
+      product: selectedProduct._id,
+      isCart: false,
+      location: fullAddress,
+    };
+
+    try {
+      await axios.post(`${BASE_URL}/orders`, orderData);
+      alert(`Order placed for ${selectedProduct.name}!`);
+      setShowPopup(false);
+      setAddress({
+        line1: "",
+        line2: "",
+        landmark: "",
+        pincode: "",
+        city: "",
+        state: ""
+      });
+      navigate("/orders"); // redirect to Orders page
+    } catch (error) {
+      console.error("Error placing order:", error.response?.data || error);
+      alert("Failed to place order.");
+    }
+  };
 
   return (
     <div>
@@ -63,33 +146,58 @@ function Dashboard() {
             </p>
           ) : (
             <div className="product-grid">
-              {products.map((product) => {
-                // 🔍 Debugging log
-                console.log("Product:", product.name, "Image:", product.image);
-
-                return (
-                  <div className="product-card" key={product._id}>
-                    <img
-                      src={
-                        product.image?.startsWith("data:")
-                          ? product.image
-                          : `data:image/jpeg;base64,${product.image}`
-                      }
-                      alt={product.name}
-                      className="product-image"
-                    />
-                    <div className="product-card-content">
-                      <h3>{product.name}</h3>
-                      <p>₹{product.price}</p>
-                      <p>{product.description}</p>
+              {products.map((product) => (
+                <div className="product-card" key={product._id}>
+                  <img
+                    src={
+                      product.image?.startsWith("data:")
+                        ? product.image
+                        : `data:image/jpeg;base64,${product.image}`
+                    }
+                    alt={product.name}
+                    className="product-image"
+                  />
+                  <div className="product-card-content">
+                    <h3>{product.name}</h3>
+                    <p>₹{product.price}</p>
+                    <p>{product.description}</p>
+                    <div className="product-actions">
+                      <button onClick={() => addToCart(product)}>Add to Cart</button>
+                      <button onClick={() => orderNow(product)}>Order Now</button>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           )}
         </main>
       </div>
+
+      {/* Popup Modal */}
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup">
+            <h2>Enter Delivery Address</h2>
+            <input type="text" placeholder="Address Line 1"
+              value={address.line1} onChange={(e) => setAddress({ ...address, line1: e.target.value })} />
+            <input type="text" placeholder="Address Line 2"
+              value={address.line2} onChange={(e) => setAddress({ ...address, line2: e.target.value })} />
+            <input type="text" placeholder="Landmark"
+              value={address.landmark} onChange={(e) => setAddress({ ...address, landmark: e.target.value })} />
+            <input type="text" placeholder="Pincode"
+              value={address.pincode} onChange={(e) => setAddress({ ...address, pincode: e.target.value })} />
+            <input type="text" placeholder="City"
+              value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} />
+            <input type="text" placeholder="State"
+              value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} />
+
+            <div className="popup-actions">
+              <button onClick={confirmOrder}>Confirm</button>
+              <button onClick={() => setShowPopup(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -20,14 +20,6 @@ function App() {
 
         {/* Private routes */}
         <Route
-          path="/admin/orders"
-          element={
-            <PrivateRoute>
-              <AdminOrders />
-            </PrivateRoute>
-          }
-        />
-        <Route
           path="/dashboard"
           element={
             <PrivateRoute>
@@ -52,18 +44,28 @@ function App() {
           }
         />
         <Route
-          path="/admin"
+          path="/cart"
           element={
             <PrivateRoute>
+              <Cart />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Admin-only routes */}
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute adminOnly={true}>
               <AdminDashboard />
             </PrivateRoute>
           }
         />
         <Route
-          path="/cart"
+          path="/admin/orders"
           element={
-            <PrivateRoute>
-              <Cart />
+            <PrivateRoute adminOnly={true}>
+              <AdminOrders />
             </PrivateRoute>
           }
         />
