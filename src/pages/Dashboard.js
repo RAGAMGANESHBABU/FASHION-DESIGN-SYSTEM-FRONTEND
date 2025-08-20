@@ -63,6 +63,7 @@ function Dashboard() {
       user: userId,
       product: product._id,
       isCart: true,
+      location: "",
     };
 
     try {
