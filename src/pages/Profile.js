@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import NavBar from './Navbar';
+import LoadingSpinner from './LoadingSpinner'; // ✅ Global loader
 import './Profile.css';
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -19,10 +20,11 @@ const Profile = () => {
         .get(`${BASE_URL}/users/profile/${id}`)
         .then((res) => {
           setProfile(res.data);
-          setLoading(false);
         })
         .catch((err) => {
           console.error('Failed to fetch profile:', err);
+        })
+        .finally(() => {
           setLoading(false);
         });
     } else {
@@ -30,7 +32,7 @@ const Profile = () => {
     }
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingSpinner />; // ✅ Global animation while loading
   if (!profile) return <p>User not found.</p>;
 
   return (

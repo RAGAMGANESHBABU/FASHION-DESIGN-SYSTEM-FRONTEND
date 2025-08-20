@@ -1,0 +1,27 @@
+/* Global Custom Alert CSS */
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #4caf50; /* success */
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  animation: slideDown 0.5s ease, fadeOut 0.5s ease 3s forwards;
+  z-index: 9999;
+}
+
+.custom-alert.error {
+  background: #f44336; /* failure */
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-50px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateY(-20px); }
+}

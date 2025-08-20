@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "./Navbar";
+import LoadingSpinner from "./LoadingSpinner"; // ✅ Global loader
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +10,7 @@ const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 function Dashboard() {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [loading, setLoading] = useState(false); // ✅ added loader state
   const [showPopup, setShowPopup] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [address, setAddress] = useState({
@@ -35,6 +37,7 @@ function Dashboard() {
   // Fetch products
   const fetchProducts = async (category) => {
     try {
+      setLoading(true); // ✅ start loading
       const url =
         category === "All"
           ? `${BASE_URL}/products`
@@ -43,6 +46,8 @@ function Dashboard() {
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false); // ✅ stop loading
     }
   };
 
@@ -50,7 +55,6 @@ function Dashboard() {
     fetchProducts(selectedCategory);
   }, [selectedCategory]);
 
-  // Add to Cart
   const addToCart = async (product) => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (!storedUser || !storedUser._id) {
@@ -63,7 +67,7 @@ function Dashboard() {
       user: userId,
       product: product._id,
       isCart: true,
-      location: "",
+      location: "Cart item - address not set", // ✅ dummy value
     };
 
     try {
@@ -91,9 +95,8 @@ function Dashboard() {
 
     const userId = storedUser._id;
 
-    // Combine address fields
     const fullAddress = `${address.line1}, ${address.line2}, ${address.landmark}, ${address.pincode}, ${address.city}, ${address.state}`;
-    console.log(fullAddress);
+    
     const orderData = {
       user: userId,
       product: selectedProduct._id,
@@ -113,7 +116,7 @@ function Dashboard() {
         city: "",
         state: ""
       });
-      navigate("/orders"); // redirect to Orders page
+      navigate("/orders"); 
     } catch (error) {
       console.error("Error placing order:", error.response?.data || error);
       alert("Failed to place order.");
@@ -141,7 +144,10 @@ function Dashboard() {
 
         <main className="dashboard-content">
           <h1>{selectedCategory} Products</h1>
-          {products.length === 0 ? (
+
+          {loading ? ( // ✅ show spinner while fetching
+            <LoadingSpinner />
+          ) : products.length === 0 ? (
             <p style={{ textAlign: "center", marginTop: "2rem" }}>
               No products available in this category.
             </p>
