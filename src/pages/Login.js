@@ -16,32 +16,41 @@ const Login = () => {
     localStorage.removeItem('user');
   }, []);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+ const handleLogin = async (e) => {
+  e.preventDefault();
 
-    try {
-      const res = await axios.post(`${BASE_URL}/users/login`, { email, password });
+  try {
+    const res = await axios.post(`${BASE_URL}/users/login`, { email, password });
 
-      if (res.data?.user) {
-        // Successful login
-        localStorage.setItem('token', 'yes'); // backend token ideally store cheyyali
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-        navigate('/dashboard');
+    if (res.data?.user) {
+      const user = res.data.user;
+
+      // Store token and user in localStorage
+      localStorage.setItem('token', 'yes'); // backend token ideally store cheyyali
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // Redirect based on isAdmin
+      if (user.isAdmin) {
+        navigate('/admin-dashboard'); // admin dashboard route
       } else {
-        alert('Invalid login response from server.');
+        navigate('/dashboard'); // normal user dashboard
       }
-    } catch (error) {
-      console.error('Login error:', error);
-
-      if (error.response) {
-        alert(error.response.data?.message || 'Invalid credentials');
-      } else if (error.request) {
-        alert('No response from server. Please check your internet or backend.');
-      } else {
-        alert('Error: ' + error.message);
-      }
+    } else {
+      alert('Invalid login response from server.');
     }
-  };
+  } catch (error) {
+    console.error('Login error:', error);
+
+    if (error.response) {
+      alert(error.response.data?.message || 'Invalid credentials');
+    } else if (error.request) {
+      alert('No response from server. Please check your internet or backend.');
+    } else {
+      alert('Error: ' + error.message);
+    }
+  }
+};
+
 
   return (
     <div className="login-container">
