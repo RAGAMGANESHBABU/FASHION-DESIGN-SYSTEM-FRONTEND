@@ -16,7 +16,7 @@ const Login = () => {
     localStorage.removeItem('user');
   }, []);
 
- const handleLogin = async (e) => {
+const handleLogin = async (e) => {
   e.preventDefault();
 
   try {
@@ -25,15 +25,15 @@ const Login = () => {
     if (res.data?.user) {
       const user = res.data.user;
 
-      // Store token and user in localStorage
-      localStorage.setItem('token', 'yes'); // backend token ideally store cheyyali
+      // Store user and token properly
+      localStorage.setItem('token', 'yes'); // replace with JWT if available
       localStorage.setItem('user', JSON.stringify(user));
 
       // Redirect based on isAdmin
-      if (user.isAdmin) {
-        navigate('/admin-dashboard'); // admin dashboard route
+      if (!user.isAdmin) {
+        navigate('/dashboard'); // admin dashboard
       } else {
-        navigate('/dashboard'); // normal user dashboard
+        navigate('/admin'); // normal user dashboard
       }
     } else {
       alert('Invalid login response from server.');
@@ -42,14 +42,15 @@ const Login = () => {
     console.error('Login error:', error);
 
     if (error.response) {
-      alert(error.response.data?.message || 'Invalid credentials');
+      alert(error.response.data?.error || 'Invalid credentials');
     } else if (error.request) {
-      alert('No response from server. Please check your internet or backend.');
+      alert('No response from server. Check your backend or internet.');
     } else {
       alert('Error: ' + error.message);
     }
   }
 };
+
 
 
   return (

@@ -12,6 +12,7 @@ const AdminNavbar = () => {
         <ul className="admin-nav-links">
           <li onClick={() => navigate('/admin')}>Products</li>
           <li onClick={() => navigate('/admin/orders')}>Orders</li>
+          <li onClick={() => navigate('/admin/users')}>Users</li> {/* ✅ new link */}
           <li onClick={() => navigate('/')}>Logout</li>
         </ul>
       </div>

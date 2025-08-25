@@ -1,6 +1,14 @@
-.profileContainer {
+/* Only inside .profile-wrapper lo unna styles matramey apply avtayi */
+.profile-wrapper .profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.profile-wrapper .profile-card {
   max-width: 500px;
-  margin: auto;
+  width: 100%;
   text-align: left;
   border: 1px solid #ccc;
   padding: 20px;
@@ -9,12 +17,12 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.profileContainer h2 {
+.profile-wrapper .profile-card h2 {
   color: #333;
   margin-bottom: 10px;
 }
 
-.profileContainer p {
+.profile-wrapper .profile-card p {
   font-size: 16px;
   color: #555;
   margin: 6px 0;

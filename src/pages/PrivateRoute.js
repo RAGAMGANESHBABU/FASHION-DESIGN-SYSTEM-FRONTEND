@@ -1,34 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 const PrivateRoute = ({ children, adminOnly = false }) => {
-  const [authorized, setAuthorized] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-
-    if (!token) {
-      setAuthorized(false);  // redirect to login
-    } else if (adminOnly && role !== 'admin') {
-      setAuthorized(false);  // redirect to dashboard if not admin
-    } else {
-      setAuthorized(true);   // allowed
-    }
-  }, [adminOnly]);
-
-  if (authorized === null) {
-    // while checking localStorage, show nothing or loader
-    return null;
-  }
-
-  if (!authorized) {
   const token = localStorage.getItem('token');
-  // check role only if needed
-  const redirectPath = (token && adminOnly) ? '/dashboard' : '/';
-  return <Navigate to={redirectPath} />;
-}
+  const user = JSON.parse(localStorage.getItem('user'));
 
+  if (!token || !user) return <Navigate to="/login" />;
+
+  if (adminOnly && !user.isAdmin) return <Navigate to="/dashboard" />;
 
   return children;
 };

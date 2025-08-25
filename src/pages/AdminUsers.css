@@ -1,0 +1,66 @@
+.admin-users {
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.admin-users h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.users-table th,
+.users-table td {
+  border: 1px solid #ddd;
+  padding: 0.8rem;
+  text-align: center;
+}
+
+.users-table th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.users-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.users-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.users-table input,
+.users-table select {
+  width: 90%;
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.users-table button {
+  margin: 0 0.2rem;
+  padding: 0.4rem 0.7rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.users-table button:hover {
+  opacity: 0.85;
+}
+
+.users-table button:first-child {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.users-table button:last-child {
+  background-color: #f44336;
+  color: white;
+}

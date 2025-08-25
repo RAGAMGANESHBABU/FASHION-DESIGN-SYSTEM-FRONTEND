@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminOrders from './pages/AdminOrders';
 import Cart from './pages/Cart';
 import PrivateRoute from './pages/PrivateRoute';
+import AdminUsers from './pages/AdminUsers';
 
 function App() {
   return (
@@ -61,11 +62,20 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/admin/orders"
           element={
             <PrivateRoute adminOnly={true}>
               <AdminOrders />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <PrivateRoute adminOnly={true}>
+              <AdminUsers />
             </PrivateRoute>
           }
         />
