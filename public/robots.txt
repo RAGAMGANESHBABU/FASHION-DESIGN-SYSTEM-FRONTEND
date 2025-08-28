@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://fashion-design-system-pgdh1x214-gannus-projects-2f4f7bf5.vercel.app//sitemap.xml
+Sitemap: https://fashion-design-system.vercel.app/sitemap.xml
